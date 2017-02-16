@@ -1,0 +1,101 @@
+<html>
+<head>
+    <title>pixi.js example 1</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+        }
+    </style>
+    <script src="pixi.js"></script>
+</head>
+<body>
+    <script>
+    var screenWidth = 800;
+    var screenHeight = 600;
+    
+    var game = new Object();
+    game.icbms = [];
+                 
+    var assetsToLoad = [ "city.png",
+                         "icbm.png"];
+
+    loader = new PIXI.AssetLoader(assetsToLoad);
+    loader.onComplete = onAssetsLoaded
+    loader.load();
+
+    function onAssetsLoaded()
+    {        
+        // create an new instance of a pixi stage
+        game.stage = new PIXI.Stage(0x000000);
+        var stage = game.stage;
+        
+        // create a renderer instance.
+        game.renderer = PIXI.autoDetectRenderer(screenWidth, screenHeight);
+        
+        // add the renderer view element to the DOM
+        document.body.appendChild(game.renderer.view);
+        
+        var cityTex = PIXI.Texture.fromImage("city.png");
+        // create a new Sprite using the texture
+        var city = new PIXI.Sprite(cityTex);
+        city.anchor = new PIXI.Point(0.5, 0.5);
+        city.position.y = screenHeight - city.height;
+        city.position.x = screenWidth / 2;
+        
+        var icbmTex = PIXI.Texture.fromImage('icbm.png');
+        
+        var i = new PIXI.Sprite(icbmTex);
+        i.position.y = 10;
+        i.anchor = new PIXI.Point(0.5, 0.5);
+        i.position.x = Math.random() * screenWidth;
+        i.startPosition = { x: i.position.x,
+                            y: i.position.y};
+                
+        var angle = Math.random() * Math.PI;
+        
+        i.vx = 5 * Math.cos(angle);
+        i.vy = 5 * Math.sin(angle);
+        i.trailLine = new PIXI.Graphics();
+        i.trailLine.lineStyle(1, 0xFFFFFF, 1);
+        stage.addChild(i);
+        stage.addChild(i.trailLine);
+        game.icbms.push(i);
+        
+        
+        var test = new PIXI.Graphics();
+        test.lineStyle(10, 0xFF0000, 0.8);
+        test.beginFill(0xFF700B, 1);
+          
+        test.moveTo(screenWidth / 2, screenHeight / 2);
+        test.drawCircle(screenWidth / 2, screenHeight / 2, 10);
+        test.endFill();
+        
+        var ground = new PIXI.Graphics();
+        ground.beginFill(0x00AA00, 1);
+        
+        stage.addChild(test);  
+        stage.addChild(city);
+        requestAnimFrame( animate );
+    }
+     
+    function animate() {
+        for(var i = 0; i < game.icbms.length; i++)
+        {
+            var o = game.icbms[i];
+            o.position.x += o.vx;
+            o.position.y += o.vy;
+            o.trailLine.moveTo(o.position.x, o.position.y);          
+            o.trailLine.lineTo(o.startPosition.x, o.startPosition.y);            
+        }   
+ 
+        requestAnimFrame( animate );
+ 
+        // render the stage   
+        game.renderer.render(game.stage);
+    }
+  
+    </script> 
+    </body>
+</html>
